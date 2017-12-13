@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using Microsoft.AspNetCore.Http;
+using Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -11,7 +12,7 @@ namespace FileServiceApi.Services
         public GoogleService()
         { }
                        
-        public string GetAuthRequestLink()
+        private string GetAuthRequestLink()
         {
             var baseUrl = @"https://accounts.google.com/o/oauth2/v2/auth";
 
@@ -19,7 +20,14 @@ namespace FileServiceApi.Services
                 baseUrl,
                 GoogleDriveAppClient.RedirectUrl,
                 GoogleDriveAppClient.ClientId,
-                GoogleDriveAppClient.BaseUrl + GoogleDriveAppClient.Scope);            
+                GoogleDriveAppClient.Scope);            
+        }
+
+        public string Login()
+        {
+            var link = GetAuthRequestLink();           
+
+            return GetAuthRequestLink();
         }
 
         public async Task<string> GetToken(AuthorizationModel model)
@@ -47,7 +55,7 @@ namespace FileServiceApi.Services
             public static string ClientId { get; } = "949586784197-ogg773sid1bs5hco4hurjiqi93gm58ku.apps.googleusercontent.com";
             public static string ClientSecret { get; } = "XsP_id5z7UfBNIJGeGfi7zWL";
             public static string GrandType { get; } = "authorization_code";
-            public static string Scope { get; } = "/auth/drive";
+            public static string Scope { get; } = @"https://www.googleapis.com/auth/drive";
             public static string BaseUrl { get; } = @"https://www.googleapis.com";
         }
     }

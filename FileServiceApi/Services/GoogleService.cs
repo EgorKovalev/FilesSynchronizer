@@ -115,7 +115,7 @@ namespace FileServiceApi.Services
                 client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var result = await client.GetAsync("/drive/v3/files/" + folderId + "/children");
+                var result = await client.GetAsync("/drive/v2/files/" + folderId + "/children");
                 return await result.Content.ReadAsStringAsync();
             }
         }

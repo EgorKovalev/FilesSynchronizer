@@ -3,6 +3,7 @@ using FileServiceApi.Services;
 using Models;
 using Newtonsoft.Json;
 using Google.Apis.Drive.v3.Data;
+using System.Collections.Generic;
 
 namespace FileServiceApi.Controllers
 {
@@ -41,12 +42,20 @@ namespace FileServiceApi.Controllers
         /// <param name="model">contains authorization token</param>
         /// <returns>model, that contains files list</returns>
         [HttpGet("list")]
-        public FilesListModel GetList(RequestTokenModel model)
+        public Dictionary<string, string> GetList(RequestTokenModel model)
         {
             var service = new GoogleService();
             var json = service.GetList(model.Token).Result;
 
-            return JsonConvert.DeserializeObject<FilesListModel>(json);
+            var files = JsonConvert.DeserializeObject<FilesListModel>(json).files;
+
+            var list = new Dictionary<string, string>();
+            foreach(var file in files)
+            {
+                list.Add(file.Id, file.Name);
+            }
+
+            return list;
         }
 
         /// <summary>
@@ -113,12 +122,20 @@ namespace FileServiceApi.Controllers
         /// <param name="model">contains authorization token</param>
         /// <returns>model, that contains files list</returns>
         [HttpGet("{folderId}/list")]
-        public FilesListModel GetList(RequestTokenModel model, string folderId)
+        public IList<string> GetList(RequestTokenModel model, string folderId)
         {
             var service = new GoogleService();
-            var json = service.GetList(model.Token).Result;
+            var json = service.GetList(model.Token, folderId).Result;
+            
+            var items = JsonConvert.DeserializeObject<ChildrenListModel>(json).items;
 
-            return JsonConvert.DeserializeObject<FilesListModel>(json);
+            var list = new List<string>();
+            foreach (var item in items)
+            {
+                list.Add(item.id);
+            }
+
+            return list;
         }
     }
 }

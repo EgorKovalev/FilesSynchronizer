@@ -4,4 +4,10 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Google.Apis" Version="1.32.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.32.0" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.32.0.1072" />
+  </ItemGroup>
+
 </Project>

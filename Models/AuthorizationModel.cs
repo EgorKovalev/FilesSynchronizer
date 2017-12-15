@@ -7,4 +7,10 @@ namespace Models
         [Required]
         public string Code { get; set; }
     }
+
+    public class RequestTokenModel
+    {
+        [Required]
+        public string Token { get; set; }
+    }
 }

@@ -9,9 +9,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis" Version="1.31.1" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.31.1" />
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.31.1.1058" />
+    <PackageReference Include="Google.Apis" Version="1.32.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.32.0" />
+    <PackageReference Include="Google.Apis.Drive.v3" Version="1.32.0.1072" />
     <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.2.3" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.0" />

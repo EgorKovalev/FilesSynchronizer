@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Models;
+﻿using Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FileServiceApi.Services
@@ -45,6 +46,76 @@ namespace FileServiceApi.Services
                 });
 
                 var result = await client.PostAsync("/oauth2/v4/token", content);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> GET https://www.googleapis.com/drive/v3/files </summary>
+        public async Task<string> GetList(string token)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var result = await client.GetAsync("/drive/v3/files");
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> GET https://www.googleapis.com/drive/v3/files/fileId </summary>
+        public async Task<string> GetFile(string token, string fileId)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var result = await client.GetAsync("/drive/v3/files/" + fileId);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> POST https://www.googleapis.com/drive/v3/files/fileId/copy </summary>
+        public async Task<string> CopyFile(string token, string fileId, string parentId = null)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var model = new RequestCopyFileModel();
+                model.parents = new string[] { parentId };
+
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                var result = await client.PostAsync("/drive/v3/files/" + fileId + "/copy", content);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> DELETE https://www.googleapis.com/drive/v3/files/fileId </summary>
+        public async Task<string> DeleteFile(string token, string fileId)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                
+                var result = await client.DeleteAsync("/drive/v3/files/" + fileId);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> GET https://www.googleapis.com/drive/v2/files/folderId/children </summary>
+        public async Task<string> GetList(string token, string folderId)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var result = await client.GetAsync("/drive/v3/files/" + folderId + "/children");
                 return await result.Content.ReadAsStringAsync();
             }
         }

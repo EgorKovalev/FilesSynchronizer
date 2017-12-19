@@ -4,6 +4,7 @@ using Models;
 using Newtonsoft.Json;
 using Google.Apis.Drive.v3.Data;
 using System.Collections.Generic;
+using Models.GoogleModels;
 
 namespace FileServiceApi.Controllers
 {
@@ -52,7 +53,7 @@ namespace FileServiceApi.Controllers
             var list = new Dictionary<string, string>();
             foreach(var file in files)
             {
-                list.Add(file.Id, file.Name);
+                list.Add(file.Name, file.Id);
             }
 
             return list;

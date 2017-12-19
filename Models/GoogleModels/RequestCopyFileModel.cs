@@ -1,4 +1,4 @@
-﻿namespace Models
+﻿namespace Models.GoogleModels
 {
     public class RequestCopyFileModel
     {

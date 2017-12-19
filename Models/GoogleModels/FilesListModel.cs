@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Google.Apis.Drive.v3.Data;
 
-namespace Models
+namespace Models.GoogleModels
 {
     public class FilesListModel
     {

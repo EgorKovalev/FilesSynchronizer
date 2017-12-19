@@ -8,12 +8,14 @@ namespace FileServiceApi.Services
 {
     public class YandexService : IService
     {
+        private const int _maxItemsOnPage = 10000;
+
         public YandexService()
         { }
 
         private string BuildAuthLink()
         {
-            return YandexDiscAppClient.BaseUrl + "/authorize?response_type=code&client_id=" + YandexDiscAppClient.ClientId;
+            return YandexDiscAppClient.BaseAuthUrl + "/authorize?response_type=code&client_id=" + YandexDiscAppClient.ClientId;
         }
 
         public string GetAuthLink()
@@ -27,7 +29,7 @@ namespace FileServiceApi.Services
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(YandexDiscAppClient.BaseUrl);
+                client.BaseAddress = new Uri(YandexDiscAppClient.BaseAuthUrl);
                 var content = new FormUrlEncodedContent(new[]
                 {
                 new KeyValuePair<string, string>("code", model.Code),                
@@ -41,13 +43,27 @@ namespace FileServiceApi.Services
             }
         }
 
+        /// <summary> GET https://cloud-api.yandex.net/v1/disk/resources?path={path}&limit={_maxItemsOnPage} </summary>
+        public async Task<string> GetList(string token, string path = "/")
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(YandexDiscAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);
+
+                var result = await client.GetAsync(string.Format("/v1/disk/resources?path=/{0}&limit={1}", path, _maxItemsOnPage));
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
         internal abstract class YandexDiscAppClient
         {
             public static string RedirectUrl { get; } = @"http://localhost:46278/swagger";
             public static string ClientId { get; } = "80efe41b160b4dbe89dbba9b9f33e543";
             public static string ClientSecret { get; } = "93fe81cc72344967a039d3969b2ee7d8";
             public static string GrandType { get; } = "authorization_code";
-            public static string BaseUrl { get; } = @"https://oauth.yandex.ru";
+            public static string BaseAuthUrl { get; } = @"https://oauth.yandex.ru";
+            public static string BaseUrl { get; } = @"https://cloud-api.yandex.net";
         }
     }
 }

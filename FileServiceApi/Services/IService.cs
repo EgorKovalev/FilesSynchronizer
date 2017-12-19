@@ -7,5 +7,6 @@ namespace FileServiceApi.Services
     {
         string GetAuthLink();
         Task<string> GetToken(AuthorizationModel model);
+        Task<string> GetList(string token, string optional);
     }
 }

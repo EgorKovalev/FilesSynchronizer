@@ -19,7 +19,7 @@ namespace FileServiceApi.Controllers
         public string GetAuthCode()
         {
             var service = new GoogleService();
-            return service.Login();            
+            return service.GetAuthLink();            
         }
 
         /// <summary>

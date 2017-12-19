@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace FileServiceApi.Services
 {
-    public class YandexService
+    public class YandexService : IService
     {
         public YandexService()
         { }
 
-        private string GetAuthRequestLink()
+        private string BuildAuthLink()
         {
             return YandexDiscAppClient.BaseUrl + "/authorize?response_type=code&client_id=" + YandexDiscAppClient.ClientId;
         }
 
-        public string Login()
+        public string GetAuthLink()
         {
-            var link = GetAuthRequestLink();
+            var link = BuildAuthLink();
 
-            return GetAuthRequestLink();
+            return BuildAuthLink();
         }
 
         public async Task<string> GetToken(AuthorizationModel model)

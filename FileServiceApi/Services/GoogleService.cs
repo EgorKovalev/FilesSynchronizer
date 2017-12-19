@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace FileServiceApi.Services
 {
-    public class GoogleService
+    public class GoogleService : IService
     {        
         public GoogleService()
         { }
                        
-        private string GetAuthRequestLink()
+        private string BuildAuthLink()
         {
             var baseUrl = @"https://accounts.google.com/o/oauth2/v2/auth";
 
@@ -24,11 +24,11 @@ namespace FileServiceApi.Services
                 GoogleDriveAppClient.Scope);            
         }
 
-        public string Login()
+        public string GetAuthLink()
         {
-            var link = GetAuthRequestLink();           
+            var link = BuildAuthLink();           
 
-            return GetAuthRequestLink();
+            return BuildAuthLink();
         }
 
         public async Task<string> GetToken(AuthorizationModel model)

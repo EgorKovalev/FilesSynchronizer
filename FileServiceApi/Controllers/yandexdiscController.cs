@@ -17,7 +17,7 @@ namespace FileServiceApi.Controllers
         public string GetAuthCode()
         {
             var service = new YandexService();
-            return service.Login();
+            return service.GetAuthLink();
         }
 
         /// <summary>

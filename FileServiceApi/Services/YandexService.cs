@@ -1,10 +1,7 @@
 ﻿using Models;
-using Models.YandexModels;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FileServiceApi.Services
@@ -70,6 +67,19 @@ namespace FileServiceApi.Services
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);
 
                 var result = await client.PostAsync(string.Format("/v1/disk/resources/copy?from={0}&path={1}", path, copyToPath), null);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> DELETE https://cloud-api.yandex.net/v1/disk/resources </summary>
+        public async Task<string> DeleteFile(string token, string path)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(YandexDiscAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);
+
+                var result = await client.DeleteAsync("/v1/disk/resources?path=" + path);
                 return await result.Content.ReadAsStringAsync();
             }
         }

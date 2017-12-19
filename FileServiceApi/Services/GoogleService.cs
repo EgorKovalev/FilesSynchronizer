@@ -101,7 +101,7 @@ namespace FileServiceApi.Services
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);
                 
                 var result = await client.DeleteAsync("/drive/v3/files/" + fileId);
                 return await result.Content.ReadAsStringAsync();

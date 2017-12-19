@@ -99,5 +99,18 @@ namespace FileServiceApi.Controllers
             var service = new YandexService();
             var json = service.CopyFile(model.Token, path, newPath).Result;
         }
+
+        /// <summary>
+        /// DELETE api/yandexdisc/file/{path}/delete
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to delete</param>
+        [HttpDelete("file/{path}/delete")]
+        public void DeleteFile(RequestTokenModel model, string path)
+        {
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
+            var service = new YandexService();
+            var json = service.DeleteFile(model.Token, newPath).Result;
+        }
     }
 }

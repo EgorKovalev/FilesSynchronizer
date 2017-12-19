@@ -1,7 +1,10 @@
 ﻿using Models;
+using Models.YandexModels;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FileServiceApi.Services
@@ -51,7 +54,22 @@ namespace FileServiceApi.Services
                 client.BaseAddress = new Uri(YandexDiscAppClient.BaseUrl);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);
 
-                var result = await client.GetAsync(string.Format("/v1/disk/resources?path=/{0}&limit={1}", path, _maxItemsOnPage));
+                var result = await client.GetAsync(string.Format("/v1/disk/resources?path={0}&limit={1}", path, _maxItemsOnPage));
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> POST https://cloud-api.yandex.net/v1/disk/resources/copy </summary>
+        public async Task<string> CopyFile(string token, string path, string copyToPath = null)
+        {
+            if (copyToPath is null) copyToPath = path + "-copy";
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(YandexDiscAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);
+
+                var result = await client.PostAsync(string.Format("/v1/disk/resources/copy?from={0}&path={1}", path, copyToPath), null);
                 return await result.Content.ReadAsStringAsync();
             }
         }

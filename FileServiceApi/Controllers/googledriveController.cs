@@ -78,15 +78,12 @@ namespace FileServiceApi.Controllers
         /// POST api/googledrive/file/{id}/copy
         /// </summary>
         /// <param name="model">contains authorization token</param>
-        /// <param name="fileId">file id to copy</param>
-        /// <returns>files resource</returns>
+        /// <param name="fileId">file id to copy</param>        
         [HttpPost("file/{fileId}/copy")]
-        public File CopyFile(RequestTokenModel model, string fileId)
+        public void CopyFile(RequestTokenModel model, string fileId)
         {
             var service = new GoogleService();
-            var json = service.CopyFile(model.Token, fileId).Result;
-
-            return JsonConvert.DeserializeObject<File>(json);
+            var json = service.CopyFile(model.Token, fileId).Result;            
         }
 
         /// <summary>
@@ -94,15 +91,12 @@ namespace FileServiceApi.Controllers
         /// </summary>
         /// <param name="model">contains authorization token</param>
         /// <param name="fileId">file id to copy</param>
-        /// <param name="parentId">parent item id</param>
-        /// <returns>files resource</returns>
+        /// <param name="parentId">parent item id</param>        
         [HttpPost("file/{fileId}/copyto/{parentId}")]
-        public File CopyFileTo(RequestTokenModel model, string fileId, string parentId)
+        public void CopyFileTo(RequestTokenModel model, string fileId, string parentId)
         {
             var service = new GoogleService();
-            var json = service.CopyFile(model.Token, fileId, parentId).Result;
-
-            return JsonConvert.DeserializeObject<File>(json);
+            var json = service.CopyFile(model.Token, fileId, parentId).Result;            
         }
 
         /// <summary>

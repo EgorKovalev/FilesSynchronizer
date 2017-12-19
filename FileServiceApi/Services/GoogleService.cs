@@ -85,7 +85,7 @@ namespace FileServiceApi.Services
                 client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var model = new RequestCopyFileModel();
+                var model = new RequestCopyModel();
                 model.parents = new string[] { parentId };
 
                 var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");

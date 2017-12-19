@@ -8,5 +8,6 @@ namespace FileServiceApi.Services
         string GetAuthLink();
         Task<string> GetToken(AuthorizationModel model);
         Task<string> GetList(string token, string optional);
+        Task<string> CopyFile(string token, string path, string copyToPath);
     }
 }

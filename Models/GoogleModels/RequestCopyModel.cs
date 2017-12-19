@@ -1,6 +1,6 @@
 ﻿namespace Models.GoogleModels
 {
-    public class RequestCopyFileModel
+    public class RequestCopyModel
     {
         public string name { get; set; }
         public string[] parents { get; set; }

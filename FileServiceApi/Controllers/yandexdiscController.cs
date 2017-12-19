@@ -52,7 +52,7 @@ namespace FileServiceApi.Controllers
             var list = new Dictionary<string, string>();
             foreach (var file in files)
             {
-                list.Add(file.name, file.path);
+                list.Add(file.name, file.path.Replace("disk:",""));
             }
 
             return list;
@@ -62,7 +62,7 @@ namespace FileServiceApi.Controllers
         /// GET api/yandexdisc/file/{path}
         /// </summary>
         /// <param name="model">contains authorization token</param>
-        /// <param name="path">file id to get</param>
+        /// <param name="path">file path to get</param>
         /// <returns>files resource</returns>
         [HttpGet("file/{path}")]
         public FilesListModel GetFile(RequestTokenModel model, string path)
@@ -71,6 +71,33 @@ namespace FileServiceApi.Controllers
             var json = service.GetList(model.Token, path).Result;
 
             return JsonConvert.DeserializeObject<FilesListModel>(json);
+        }
+
+        /// <summary>
+        /// POST api/yandexdisc/file/{path}/copy
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to copy from</param>        
+        [HttpPost("file/{path}/copy")]
+        public void CopyFile(RequestTokenModel model, string path)
+        {
+            var service = new YandexService();
+            var json = service.CopyFile(model.Token, path).Result;            
+        }
+
+        /// <summary>
+        /// POST api/yandexdisc/file/{path}/copyto/{pathTo}
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to copy from</param>
+        /// <param name="pathTo">file path to copy to</param>        
+        /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
+        [HttpPost("file/{path}/copyto/{pathTo}")]
+        public void CopyFileTo(RequestTokenModel model, string path, string pathTo)
+        {
+            var newPath = pathTo.Replace(">", "/"); //Temporary solution. Only for swagger bug
+            var service = new YandexService();
+            var json = service.CopyFile(model.Token, path, newPath).Result;
         }
     }
 }

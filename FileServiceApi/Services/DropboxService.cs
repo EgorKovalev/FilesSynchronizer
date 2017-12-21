@@ -38,14 +38,15 @@ namespace FileServiceApi.Services
             }
         }
 
-        public async Task<string> GetList(string token, string path = null)
+        public async Task<string> GetList(string token, string path = "")
         {
+
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(DropboxAppClient.BaseAuthUrl);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
-                var model = new Dictionary<string, string>() { { "path", "" } };
+                var model = new Dictionary<string, string>() { { "path", path } };
                 var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
                 var result = await client.PostAsync("/2/files/list_folder", content);

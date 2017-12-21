@@ -37,22 +37,25 @@ namespace FileServiceApi.Controllers
         }
 
         /// <summary>
-        /// GET api/dropbox/list
+        /// POST api/dropbox/list
         /// </summary>
         /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to get</param>
         /// <returns>model, that contains files list</returns>
         [HttpPost("list")]
-        public Dictionary<string, string> GetList(RequestTokenModel model)
+        public Dictionary<string, string> GetList(RequestTokenModel model, string path = "")
         {
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
+
             var service = new DropboxService();
-            var json = service.GetList(model.Token).Result;
+            var json = service.GetList(model.Token, newPath).Result;
 
             var files = JsonConvert.DeserializeObject<FilesListModel>(json).entries;
 
             var list = new Dictionary<string, string>();
             foreach (var file in files)
             {
-                list.Add(file.id.Replace("id:",""), file.name);
+                list.Add(file.path_lower, file.name);
             }
 
             return list;

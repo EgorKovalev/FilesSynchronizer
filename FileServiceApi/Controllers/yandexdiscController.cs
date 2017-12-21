@@ -95,7 +95,7 @@ namespace FileServiceApi.Controllers
         [HttpPost("file/{path}/copyto/{pathTo}")]
         public void CopyFileTo(RequestTokenModel model, string path, string pathTo)
         {
-            var newPath = pathTo.Replace(">", "/"); //Temporary solution. Only for swagger bug
+            var newPath = pathTo.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
             var service = new YandexService();
             var json = service.CopyFile(model.Token, path, newPath).Result;
         }

@@ -11,9 +11,6 @@ namespace FileServiceApi.Services
 {
     public class GoogleService : IService
     {        
-        public GoogleService()
-        { }
-                       
         private string BuildAuthLink()
         {
             var baseUrl = @"https://accounts.google.com/o/oauth2/v2/auth";
@@ -25,12 +22,7 @@ namespace FileServiceApi.Services
                 GoogleDriveAppClient.Scope);            
         }
 
-        public string GetAuthLink()
-        {
-            var link = BuildAuthLink();           
-
-            return BuildAuthLink();
-        }
+        public string GetAuthLink() => BuildAuthLink();
 
         public async Task<string> GetToken(AuthorizationModel model)
         {

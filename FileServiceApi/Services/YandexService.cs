@@ -10,20 +10,12 @@ namespace FileServiceApi.Services
     {
         private const int _maxItemsOnPage = 10000;
 
-        public YandexService()
-        { }
-
         private string BuildAuthLink()
         {
             return YandexDiscAppClient.BaseAuthUrl + "/authorize?response_type=code&client_id=" + YandexDiscAppClient.ClientId;
         }
 
-        public string GetAuthLink()
-        {
-            var link = BuildAuthLink();
-
-            return BuildAuthLink();
-        }
+        public string GetAuthLink() => BuildAuthLink();
 
         public async Task<string> GetToken(AuthorizationModel model)
         {

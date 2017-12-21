@@ -23,7 +23,7 @@ namespace FileServiceApi.Services
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(DropboxAppClient.BaseAuthUrl);
+                client.BaseAddress = new Uri(DropboxAppClient.BaseApiUrl);
                 var content = new FormUrlEncodedContent(new[]
                 {
                 new KeyValuePair<string, string>("code", model.Code),
@@ -43,7 +43,7 @@ namespace FileServiceApi.Services
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(DropboxAppClient.BaseAuthUrl);
+                client.BaseAddress = new Uri(DropboxAppClient.BaseApiUrl);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 var model = new Dictionary<string, string>() { { "path", path } };
@@ -59,7 +59,7 @@ namespace FileServiceApi.Services
         {
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(DropboxAppClient.BaseAuthUrl);
+                client.BaseAddress = new Uri(DropboxAppClient.BaseApiUrl);
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 var model = new Dictionary<string, string>() { { "path", path } };
@@ -70,22 +70,45 @@ namespace FileServiceApi.Services
             }
         }
 
-        public Task<string> CopyFile(string token, string path, string copyTo)
+        /// <summary> POST https://api.dropboxapi.com/2/files/copy </summary>
+        public async Task<string> CopyFile(string token, string path, string copyTo)
         {
-            throw new NotImplementedException();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(DropboxAppClient.BaseApiUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var model = new Dictionary<string, string>() { { "from_path", path }, { "to_path", copyTo } };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");                
+
+                var result = await client.PostAsync("/2/files/copy", content);
+                return await result.Content.ReadAsStringAsync();
+            }
         }
 
-        public Task<string> DeleteFile(string token, string path)
+        /// <summary> POST https://api.dropboxapi.com/2/files/delete </summary>
+        public async Task<string> DeleteFile(string token, string path)
         {
-            throw new NotImplementedException();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(DropboxAppClient.BaseApiUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var model = new Dictionary<string, string>() { { "path", path } };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                var result = await client.PostAsync("/2/files/delete", content);
+                return await result.Content.ReadAsStringAsync();
+            }
         }
+
         internal abstract class DropboxAppClient
         {
             public static string RedirectUrl { get; } = @"http://localhost:46278/swagger";
             public static string ClientId { get; } = "x6vr1brv2shxh9v";
             public static string ClientSecret { get; } = "mjqcsoxxqwbm6fy";
             public static string GrantType { get; } = "authorization_code";
-            public static string BaseAuthUrl { get; } = @"https://api.dropboxapi.com";
+            public static string BaseApiUrl { get; } = @"https://api.dropboxapi.com";
             public static string BaseUrl { get; } = @"https://www.dropbox.com";
         }
     }

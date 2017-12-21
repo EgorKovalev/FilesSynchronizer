@@ -77,5 +77,35 @@ namespace FileServiceApi.Controllers
 
             return JsonConvert.DeserializeObject<DropboxItem>(json);
         }
+        
+        /// <summary>
+        /// POST api/dropbox/file/{path}/copyto/{pathTo}
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to copy from</param>
+        /// <param name="pathTo">file path to copy to</param>        
+        /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
+        [HttpPost("file/{path}/copyto/{pathTo}")]
+        public void CopyFileTo(RequestTokenModel model, string path, string pathTo)
+        {
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
+            var newPathTo = pathTo.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
+
+            var service = new DropboxService();
+            var json = service.CopyFile(model.Token, newPath, newPathTo).Result;
+        }
+
+        /// <summary>
+        /// DELETE api/dropbox/file/{path}/delete
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to delete</param>
+        [HttpPost("file/{path}/delete")]
+        public void DeleteFile(RequestTokenModel model, string path)
+        {
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
+            var service = new DropboxService();
+            var json = service.DeleteFile(model.Token, newPath).Result;
+        }
     }
 }

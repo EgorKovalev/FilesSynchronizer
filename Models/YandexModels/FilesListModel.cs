@@ -17,14 +17,14 @@ namespace Models.YandexModels
 
     public class Embedded
     {
-        public IList<Item> items { get; set; }
+        public IList<YandexdiscItem> items { get; set; }
         public int limit { get; set; }
         public int offset { get; set; }
         public string path { get; set; }
         public int total { get; set; }
     }
 
-    public class Item
+    public class YandexdiscItem
     {
         public CommentIds comment_ids { get; set; }
         public DateTime created { get; set; }

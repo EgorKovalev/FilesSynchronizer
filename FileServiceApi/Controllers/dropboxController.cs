@@ -60,5 +60,22 @@ namespace FileServiceApi.Controllers
 
             return list;
         }
+
+        /// <summary>
+        /// POST api/dropbox/file/{path}
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to get</param>
+        /// <returns>files resource</returns>
+        [HttpPost("file/{path}")]
+        public DropboxItem GetFile(RequestTokenModel model, string path)
+        {
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
+
+            var service = new DropboxService();
+            var json = service.GetFile(model.Token, newPath).Result;
+
+            return JsonConvert.DeserializeObject<DropboxItem>(json);
+        }
     }
 }

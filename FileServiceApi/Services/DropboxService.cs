@@ -38,9 +38,9 @@ namespace FileServiceApi.Services
             }
         }
 
+        /// <summary> POST https://api.dropboxapi.com/2/files/list_folder </summary>
         public async Task<string> GetList(string token, string path = "")
         {
-
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(DropboxAppClient.BaseAuthUrl);
@@ -50,6 +50,22 @@ namespace FileServiceApi.Services
                 var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
                 var result = await client.PostAsync("/2/files/list_folder", content);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> POST https://api.dropboxapi.com/2/files/get_metadata </summary>
+        public async Task<string> GetFile(string token, string path)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(DropboxAppClient.BaseAuthUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var model = new Dictionary<string, string>() { { "path", path } };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                var result = await client.PostAsync("/2/files/get_metadata", content);
                 return await result.Content.ReadAsStringAsync();
             }
         }

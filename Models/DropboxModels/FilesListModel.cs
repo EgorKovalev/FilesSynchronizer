@@ -4,12 +4,12 @@ namespace Models.DropboxModels
 {
     public class FilesListModel
     {
-        public IList<Item> entries { get; set; }
+        public IList<DropboxItem> entries { get; set; }
         public string cursor { get; set; }
         public bool has_more { get; set; }
     }
 
-    public class Item
+    public class DropboxItem
     {
         public string tag { get; set; }
         public string name { get; set; }

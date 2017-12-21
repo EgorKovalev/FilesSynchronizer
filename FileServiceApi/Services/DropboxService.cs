@@ -1,7 +1,9 @@
 ﻿using Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace FileServiceApi.Services
@@ -36,9 +38,19 @@ namespace FileServiceApi.Services
             }
         }
 
-        public Task<string> GetList(string token, string path)
+        public async Task<string> GetList(string token, string path = null)
         {
-            throw new NotImplementedException();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(DropboxAppClient.BaseAuthUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var model = new Dictionary<string, string>() { { "path", "" } };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                var result = await client.PostAsync("/2/files/list_folder", content);
+                return await result.Content.ReadAsStringAsync();
+            }
         }
 
         public Task<string> CopyFile(string token, string path, string copyTo)

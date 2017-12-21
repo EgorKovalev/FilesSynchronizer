@@ -2,6 +2,8 @@
 using FileServiceApi.Services;
 using Models;
 using Newtonsoft.Json;
+using Models.DropboxModels;
+using System.Collections.Generic;
 
 namespace FileServiceApi.Controllers
 {
@@ -32,6 +34,28 @@ namespace FileServiceApi.Controllers
             var json = service.GetToken(model).Result;
 
             return JsonConvert.DeserializeObject<DropboxTokenModel>(json);
+        }
+
+        /// <summary>
+        /// GET api/dropbox/list
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <returns>model, that contains files list</returns>
+        [HttpPost("list")]
+        public Dictionary<string, string> GetList(RequestTokenModel model)
+        {
+            var service = new DropboxService();
+            var json = service.GetList(model.Token).Result;
+
+            var files = JsonConvert.DeserializeObject<FilesListModel>(json).entries;
+
+            var list = new Dictionary<string, string>();
+            foreach (var file in files)
+            {
+                list.Add(file.id.Replace("id:",""), file.name);
+            }
+
+            return list;
         }
     }
 }

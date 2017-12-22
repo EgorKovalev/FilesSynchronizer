@@ -11,15 +11,21 @@ namespace FileServiceApi.Controllers
     [Route("api/dropbox")]
     public class dropboxController : Controller
     {
+        private readonly DropboxService _service;
+
+        public dropboxController()
+        {
+            _service = new DropboxService();
+        }
+
         /// <summary>
         /// GET api/dropbox/authlink
         /// </summary>
         /// <returns>link to login into the yandex disc service</returns>        
         [HttpGet("authlink")]
         public string GetAuthCode()
-        {
-            var service = new DropboxService();
-            return service.GetAuthLink();
+        {            
+            return _service.GetAuthLink();
         }
 
         /// <summary>
@@ -29,10 +35,8 @@ namespace FileServiceApi.Controllers
         /// <returns>authorization token</returns>
         [HttpPost("token")]
         public DropboxTokenModel GetToken(AuthorizationModel model)
-        {
-            var service = new DropboxService();
-            var json = service.GetToken(model).Result;
-
+        {            
+            var json = _service.GetToken(model).Result;
             return JsonConvert.DeserializeObject<DropboxTokenModel>(json);
         }
 
@@ -45,18 +49,13 @@ namespace FileServiceApi.Controllers
         [HttpPost("list")]
         public Dictionary<string, string> GetList(RequestTokenModel model, string path = "")
         {
-            var newPath = path.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for a swagger's bug                       
 
-            var service = new DropboxService();
-            var json = service.GetList(model.Token, newPath).Result;
-
-            var files = JsonConvert.DeserializeObject<FilesListModel>(json).entries;
+            var json = _service.GetList(model.Token, newPath).Result;
+            var files = JsonConvert.DeserializeObject<FilesListModel>(json).entries as List<DropboxItem>;
 
             var list = new Dictionary<string, string>();
-            foreach (var file in files)
-            {
-                list.Add(file.path_lower, file.name);
-            }
+            files.ForEach(file => list.Add(file.path_lower, file.name));
 
             return list;
         }
@@ -71,10 +70,8 @@ namespace FileServiceApi.Controllers
         public DropboxItem GetFile(RequestTokenModel model, string path)
         {
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
-
-            var service = new DropboxService();
-            var json = service.GetFile(model.Token, newPath).Result;
-
+                        
+            var json = _service.GetFile(model.Token, newPath).Result;
             return JsonConvert.DeserializeObject<DropboxItem>(json);
         }
         
@@ -90,9 +87,8 @@ namespace FileServiceApi.Controllers
         {
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
             var newPathTo = pathTo.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
-
-            var service = new DropboxService();
-            var json = service.CopyFile(model.Token, newPath, newPathTo).Result;
+                        
+            var json = _service.CopyFile(model.Token, newPath, newPathTo).Result;
         }
 
         /// <summary>
@@ -104,8 +100,8 @@ namespace FileServiceApi.Controllers
         public void DeleteFile(RequestTokenModel model, string path)
         {
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
-            var service = new DropboxService();
-            var json = service.DeleteFile(model.Token, newPath).Result;
+            
+            var json = _service.DeleteFile(model.Token, newPath).Result;
         }
 
         /// <summary>
@@ -117,8 +113,8 @@ namespace FileServiceApi.Controllers
         public void DownloadFile(RequestTokenModel model, string path)
         {
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
-            var service = new DropboxService();
-            var json = service.DownloadFile(model.Token, newPath).Result;
+                        
+            var json = _service.DownloadFile(model.Token, newPath).Result;
         }
 
         /// <summary>
@@ -132,9 +128,8 @@ namespace FileServiceApi.Controllers
             var fileContent = @"C:\Test\testDoc.txt";
 
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
-            var service = new DropboxService();
-
-            var json = service.UploadFile(model.Token, newPath, fileContent);
+                        
+            var json = _service.UploadFile(model.Token, newPath, fileContent);
         }
     }
 }

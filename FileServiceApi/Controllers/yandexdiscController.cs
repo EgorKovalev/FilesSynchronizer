@@ -11,15 +11,18 @@ namespace FileServiceApi.Controllers
     [Route("api/yandexdisc")]
     public class yandexdiscController : Controller
     {
+        private readonly YandexService _service;
+
+        public yandexdiscController() { _service = new YandexService(); }
+
         /// <summary>
         /// GET api/yandexdisc/authlink
         /// </summary>
         /// <returns>link to login into the yandex disc service</returns>        
         [HttpGet("authlink")]
         public string GetAuthCode()
-        {
-            var service = new YandexService();
-            return service.GetAuthLink();
+        {            
+            return _service.GetAuthLink();
         }
 
         /// <summary>
@@ -29,10 +32,8 @@ namespace FileServiceApi.Controllers
         /// <returns>authorization token</returns>
         [HttpPost("token")]
         public TokenModel GetToken(AuthorizationModel model)
-        {
-            var service = new YandexService();
-            var json = service.GetToken(model).Result;
-
+        {            
+            var json = _service.GetToken(model).Result;
             return JsonConvert.DeserializeObject<TokenModel>(json);
         }
 
@@ -43,17 +44,12 @@ namespace FileServiceApi.Controllers
         /// <returns>model, that contains files list</returns>
         [HttpGet("list")]
         public Dictionary<string, string> GetList(RequestTokenModel model)
-        {
-            var service = new YandexService();
-            var json = service.GetList(model.Token).Result;
-
-            var files = JsonConvert.DeserializeObject<FilesListModel>(json)._embedded.items;
+        {            
+            var json = _service.GetList(model.Token).Result;
+            var files = JsonConvert.DeserializeObject<FilesListModel>(json)._embedded.items as List<YandexdiscItem>;
 
             var list = new Dictionary<string, string>();
-            foreach (var file in files)
-            {
-                list.Add(file.name, file.path.Replace("disk:",""));
-            }
+            files.ForEach(file => list.Add(file.name, file.path.Replace("disk:", "")));
 
             return list;
         }
@@ -66,10 +62,8 @@ namespace FileServiceApi.Controllers
         /// <returns>files resource</returns>
         [HttpGet("file/{path}")]
         public FilesListModel GetFile(RequestTokenModel model, string path)
-        {
-            var service = new YandexService();
-            var json = service.GetList(model.Token, path).Result;
-
+        {            
+            var json = _service.GetList(model.Token, path).Result;
             return JsonConvert.DeserializeObject<FilesListModel>(json);
         }
 
@@ -80,9 +74,8 @@ namespace FileServiceApi.Controllers
         /// <param name="path">file path to copy from</param>        
         [HttpPost("file/{path}/copy")]
         public void CopyFile(RequestTokenModel model, string path)
-        {
-            var service = new YandexService();
-            var json = service.CopyFile(model.Token, path).Result;            
+        {            
+            var json = _service.CopyFile(model.Token, path).Result;            
         }
 
         /// <summary>
@@ -96,8 +89,8 @@ namespace FileServiceApi.Controllers
         public void CopyFileTo(RequestTokenModel model, string path, string pathTo)
         {
             var newPath = pathTo.Replace(">", "/"); //Temporary solution. Only for a swagger's bug
-            var service = new YandexService();
-            var json = service.CopyFile(model.Token, path, newPath).Result;
+                        
+            var json = _service.CopyFile(model.Token, path, newPath).Result;
         }
 
         /// <summary>
@@ -105,12 +98,13 @@ namespace FileServiceApi.Controllers
         /// </summary>
         /// <param name="model">contains authorization token</param>
         /// <param name="path">file path to delete</param>
+        /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
         [HttpDelete("file/{path}/delete")]
         public void DeleteFile(RequestTokenModel model, string path)
         {
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
-            var service = new YandexService();
-            var json = service.DeleteFile(model.Token, newPath).Result;
+                        
+            var json = _service.DeleteFile(model.Token, newPath).Result;
         }
     }
 }

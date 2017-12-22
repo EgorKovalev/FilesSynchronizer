@@ -13,10 +13,7 @@ namespace FileServiceApi.Controllers
     {
         private readonly DropboxService _service;
 
-        public dropboxController()
-        {
-            _service = new DropboxService();
-        }
+        public dropboxController() { _service = new DropboxService(); }
 
         /// <summary>
         /// GET api/dropbox/authlink
@@ -96,6 +93,7 @@ namespace FileServiceApi.Controllers
         /// </summary>
         /// <param name="model">contains authorization token</param>
         /// <param name="path">file path to delete</param>
+        /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
         [HttpPost("file/{path}/delete")]
         public void DeleteFile(RequestTokenModel model, string path)
         {
@@ -109,6 +107,7 @@ namespace FileServiceApi.Controllers
         /// </summary>
         /// <param name="model">contains authorization token</param>
         /// <param name="path">file path to download</param>
+        /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
         [HttpPost("file/{path}/download")]
         public void DownloadFile(RequestTokenModel model, string path)
         {
@@ -122,6 +121,7 @@ namespace FileServiceApi.Controllers
         /// </summary>
         /// <param name="model">contains authorization token</param>
         /// <param name="path">file path to upload</param>
+        /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
         [HttpPost("file/{path}/upload")]
         public void UploadFile(RequestTokenModel model, string path)
         {

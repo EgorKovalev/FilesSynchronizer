@@ -78,7 +78,7 @@ namespace FileServiceApi.Services
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 var model = new RequestCopyModel();
-                model.parents = new string[] { parentId };
+                if(!(parentId is null)) model.parents = new string[] { parentId };
 
                 var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 

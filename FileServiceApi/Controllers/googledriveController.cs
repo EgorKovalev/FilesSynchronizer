@@ -12,15 +12,21 @@ namespace FileServiceApi.Controllers
     [Route("api/googledrive")]
     public class googledriveController : Controller
     {
+        private readonly GoogleService _service;
+
+        public googledriveController()
+        {
+            _service = new GoogleService();
+        }
+
         /// <summary>
         /// GET api/googledrive/authlink
         /// </summary>
         /// <returns>link to login into the google drive service</returns>        
         [HttpGet("authlink")]
         public string GetAuthCode()
-        {
-            var service = new GoogleService();
-            return service.GetAuthLink();            
+        {            
+            return _service.GetAuthLink();            
         }
 
         /// <summary>
@@ -30,10 +36,8 @@ namespace FileServiceApi.Controllers
         /// <returns>authorization token</returns>
         [HttpPost("token")]
         public TokenModel GetToken(AuthorizationModel model)
-        {
-            var service = new GoogleService();
-            var json = service.GetToken(model).Result;            
-
+        {            
+            var json = _service.GetToken(model).Result;            
             return JsonConvert.DeserializeObject<TokenModel>(json);
         }
 
@@ -44,17 +48,12 @@ namespace FileServiceApi.Controllers
         /// <returns>model, that contains files list</returns>
         [HttpGet("list")]
         public Dictionary<string, string> GetList(RequestTokenModel model)
-        {
-            var service = new GoogleService();
-            var json = service.GetList(model.Token).Result;
-
-            var files = JsonConvert.DeserializeObject<FilesListModel>(json).files;
+        {            
+            var json = _service.GetList(model.Token).Result;
+            var files = JsonConvert.DeserializeObject<FilesListModel>(json).files as List<File>;
 
             var list = new Dictionary<string, string>();
-            foreach(var file in files)
-            {
-                list.Add(file.Name, file.Id);
-            }
+            files.ForEach(file => list.Add(file.Id, file.Name));
 
             return list;
         }
@@ -67,9 +66,8 @@ namespace FileServiceApi.Controllers
         /// <returns>files resource</returns>
         [HttpGet("file/{fileId}")]
         public File GetFile(RequestTokenModel model, string fileId)
-        {
-            var service = new GoogleService();
-            var json = service.GetFile(model.Token, fileId).Result;
+        {            
+            var json = _service.GetFile(model.Token, fileId).Result;
 
             return JsonConvert.DeserializeObject<File>(json);
         }
@@ -81,9 +79,8 @@ namespace FileServiceApi.Controllers
         /// <param name="fileId">file id to copy</param>        
         [HttpPost("file/{fileId}/copy")]
         public void CopyFile(RequestTokenModel model, string fileId)
-        {
-            var service = new GoogleService();
-            var json = service.CopyFile(model.Token, fileId).Result;            
+        {            
+            var json = _service.CopyFile(model.Token, fileId).Result;            
         }
 
         /// <summary>
@@ -94,9 +91,8 @@ namespace FileServiceApi.Controllers
         /// <param name="parentId">parent item id</param>        
         [HttpPost("file/{fileId}/copyto/{parentId}")]
         public void CopyFileTo(RequestTokenModel model, string fileId, string parentId)
-        {
-            var service = new GoogleService();
-            var json = service.CopyFile(model.Token, fileId, parentId).Result;            
+        {            
+            var json = _service.CopyFile(model.Token, fileId, parentId).Result;            
         }
 
         /// <summary>
@@ -106,9 +102,8 @@ namespace FileServiceApi.Controllers
         /// <param name="fileId">file id to delete</param>
         [HttpDelete("file/{fileId}/delete")]
         public void DeleteFile(RequestTokenModel model, string fileId)
-        {
-            var service = new GoogleService();
-            var json = service.DeleteFile(model.Token, fileId).Result;
+        {            
+            var json = _service.DeleteFile(model.Token, fileId).Result;
         }
 
         /// <summary>
@@ -118,17 +113,13 @@ namespace FileServiceApi.Controllers
         /// <returns>model, that contains files list</returns>
         [HttpGet("{folderId}/list")]
         public IList<string> GetList(RequestTokenModel model, string folderId)
-        {
-            var service = new GoogleService();
-            var json = service.GetList(model.Token, folderId).Result;
+        {            
+            var json = _service.GetList(model.Token, folderId).Result;
             
-            var items = JsonConvert.DeserializeObject<ChildrenListModel>(json).items;
-
+            var items = JsonConvert.DeserializeObject<ChildrenListModel>(json).items as List<ChildrenModel>;
             var list = new List<string>();
-            foreach (var item in items)
-            {
-                list.Add(item.id);
-            }
+
+            items.ForEach(item => list.Add(item.id));
 
             return list;
         }

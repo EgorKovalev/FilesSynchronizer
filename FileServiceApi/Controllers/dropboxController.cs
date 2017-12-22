@@ -111,14 +111,30 @@ namespace FileServiceApi.Controllers
         /// <summary>
         /// POST api/dropbox/file/{path}/download
         /// </summary>
-        /// <param name="model"></param>
-        /// <param name="path"></param>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to download</param>
         [HttpPost("file/{path}/download")]
         public void DownloadFile(RequestTokenModel model, string path)
         {
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
             var service = new DropboxService();
             var json = service.DownloadFile(model.Token, newPath).Result;
+        }
+
+        /// <summary>
+        /// POST api/dropbox/file/{path}/upload
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to upload</param>
+        [HttpPost("file/{path}/upload")]
+        public void UploadFile(RequestTokenModel model, string path)
+        {
+            var fileContent = @"C:\Test\testDoc.txt";
+
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
+            var service = new DropboxService();
+
+            var json = service.UploadFile(model.Token, newPath, fileContent);
         }
     }
 }

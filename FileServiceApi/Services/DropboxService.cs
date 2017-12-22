@@ -2,7 +2,10 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,9 +15,9 @@ namespace FileServiceApi.Services
     {
         private string BuildAuthLink()
         {
-            return string.Format(DropboxAppClient.BaseUrl + "/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}",                
+            return string.Format(DropboxAppClient.BaseUrl + "/oauth2/authorize?response_type=code&client_id={0}&redirect_uri={1}",
                 DropboxAppClient.ClientId,
-                DropboxAppClient.RedirectUrl);            
+                DropboxAppClient.RedirectUrl);
         }
 
         public string GetAuthLink() => BuildAuthLink();
@@ -79,7 +82,7 @@ namespace FileServiceApi.Services
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
                 var model = new Dictionary<string, string>() { { "from_path", path }, { "to_path", copyTo } };
-                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");                
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
 
                 var result = await client.PostAsync("/2/files/copy", content);
                 return await result.Content.ReadAsStringAsync();
@@ -108,12 +111,33 @@ namespace FileServiceApi.Services
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri(DropboxAppClient.BaseContentUrl);
-                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);                
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 client.DefaultRequestHeaders.Add("Dropbox-API-Arg", "{\"path\":\"" + path + "\"}");
 
                 var result = await client.PostAsync("/2/files/download", null);
                 return await result.Content.ReadAsStringAsync();
             }
+        }
+
+        /// <summary> POST https://content.dropboxapi.com/2/files/upload </summary>
+        public string UploadFile(string token, string path, string fileContent)
+        {
+            byte[] array = File.ReadAllBytes(fileContent);
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(new Uri(DropboxAppClient.BaseContentUrl) + "2/files/upload");
+            httpWebRequest.ContentType = "application/octet-stream";
+            httpWebRequest.Method = "POST";
+            httpWebRequest.Headers.Add("Authorization: Bearer " + token);
+            httpWebRequest.Headers.Add("Dropbox-API-Arg", "{\"path\":\"" + path + "\"}");
+
+            var httpWebRequestStream = httpWebRequest.GetRequestStream();
+            httpWebRequestStream.Write(array, 0, array.Length);
+            httpWebRequestStream.Close();
+
+            var response = (HttpWebResponse)httpWebRequest.GetResponse();
+            var reader = new StreamReader(response.GetResponseStream());
+
+            return reader.ReadToEnd();
         }
 
         internal abstract class DropboxAppClient

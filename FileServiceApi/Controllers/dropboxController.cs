@@ -96,7 +96,7 @@ namespace FileServiceApi.Controllers
         }
 
         /// <summary>
-        /// DELETE api/dropbox/file/{path}/delete
+        /// POST api/dropbox/file/{path}/delete
         /// </summary>
         /// <param name="model">contains authorization token</param>
         /// <param name="path">file path to delete</param>
@@ -106,6 +106,19 @@ namespace FileServiceApi.Controllers
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
             var service = new DropboxService();
             var json = service.DeleteFile(model.Token, newPath).Result;
+        }
+
+        /// <summary>
+        /// POST api/dropbox/file/{path}/download
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="path"></param>
+        [HttpPost("file/{path}/download")]
+        public void DownloadFile(RequestTokenModel model, string path)
+        {
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
+            var service = new DropboxService();
+            var json = service.DownloadFile(model.Token, newPath).Result;
         }
     }
 }

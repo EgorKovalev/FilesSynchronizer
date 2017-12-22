@@ -102,6 +102,20 @@ namespace FileServiceApi.Services
             }
         }
 
+        /// <summary> POST https://content.dropboxapi.com/2/files/download </summary>
+        public async Task<string> DownloadFile(string token, string path)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(DropboxAppClient.BaseContentUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);                
+                client.DefaultRequestHeaders.Add("Dropbox-API-Arg", "{\"path\":\"" + path + "\"}");
+
+                var result = await client.PostAsync("/2/files/download", null);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
         internal abstract class DropboxAppClient
         {
             public static string RedirectUrl { get; } = @"http://localhost:46278/swagger";
@@ -110,6 +124,7 @@ namespace FileServiceApi.Services
             public static string GrantType { get; } = "authorization_code";
             public static string BaseApiUrl { get; } = @"https://api.dropboxapi.com";
             public static string BaseUrl { get; } = @"https://www.dropbox.com";
+            public static string BaseContentUrl { get; } = @"https://content.dropboxapi.com";
         }
     }
 }

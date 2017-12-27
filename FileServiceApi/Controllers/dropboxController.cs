@@ -109,11 +109,12 @@ namespace FileServiceApi.Controllers
         /// <param name="path">file path to download</param>
         /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
         [HttpPost("file/{path}/download")]
-        public void DownloadFile(RequestTokenModel model, string path)
+        public string DownloadFile(RequestTokenModel model, string path)
         {
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
                         
-            var json = _service.DownloadFile(model.Token, newPath).Result;
+            var json = _service.GetLinkToDownloadFile(model.Token, newPath).Result;
+            return JsonConvert.DeserializeObject<LinkToDownloadModel>(json).link;
         }
 
         /// <summary>
@@ -126,7 +127,6 @@ namespace FileServiceApi.Controllers
         public void UploadFile(RequestTokenModel model, string path)
         {
             var fileContent = @"C:\Test\testDoc.txt";
-
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
                         
             var json = _service.UploadFile(model.Token, newPath, fileContent);

@@ -119,6 +119,22 @@ namespace FileServiceApi.Services
             }
         }
 
+        /// <summary> POST https://api.dropboxapi.com/2/files/get_temporary_link </summary>
+        public async Task<string> GetLinkToDownloadFile(string token, string path)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(DropboxAppClient.BaseApiUrl);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var model = new Dictionary<string, string>() { { "path", path } };
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                var result = await client.PostAsync("/2/files/get_temporary_link", content);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
         /// <summary> POST https://content.dropboxapi.com/2/files/upload </summary>
         public string UploadFile(string token, string path, string fileContent)
         {

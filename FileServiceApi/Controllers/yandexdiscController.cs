@@ -106,5 +106,43 @@ namespace FileServiceApi.Controllers
                         
             var json = _service.DeleteFile(model.Token, newPath).Result;
         }
+
+        /// <summary>
+        /// POST api/yandexdisc/file/{path}/download
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to download</param>
+        /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
+        [HttpGet("file/{path}/download")]
+        public string DownloadFile(RequestTokenModel model, string path)
+        {
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
+
+            var json = _service.DownloadFile(model.Token, newPath).Result;
+            return JsonConvert.DeserializeObject<LinkToDownloadModel>(json).href;
+        }
+
+        /// <summary>
+        /// PUT api/yandexdisc/file/{path}/upload
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to upload</param>
+        /// (!) please use '>' instead of '/' because of https://github.com/OAI/OpenAPI-Specification/issues/892 (!)
+        [HttpPut("file/{path}/upload")]
+        public void UploadFile(RequestTokenModel model, string path)
+        {
+            var fileContent = @"C:\Test\testDoc.txt";
+
+            var link = GetUploadLink(model, path);
+            var res = _service.UploadFile(model.Token, link, fileContent);
+        }
+
+        private string GetUploadLink(RequestTokenModel model, string path)
+        {
+            var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
+
+            var json = _service.GetUploadModel(model.Token, newPath).Result;
+            return JsonConvert.DeserializeObject<LinkToDownloadModel>(json).href;
+        }
     }
 }

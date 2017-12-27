@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace FileServiceApi.Services
 {
@@ -72,6 +73,46 @@ namespace FileServiceApi.Services
                 client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);
 
                 var result = await client.DeleteAsync("/v1/disk/resources?path=" + path);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> GET https://cloud-api.yandex.net/v1/disk/resources/download </summary>
+        public async Task<string> DownloadFile(string token, string path)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(YandexDiscAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);                
+
+                var result = await client.GetAsync(string.Format("/v1/disk/resources/download?path={0}", path));
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> PUT <generated_link> </summary>
+        public async Task<string> UploadFile(string token, string url, string fileContent)
+        {
+            byte[] array = File.ReadAllBytes(fileContent);
+
+            using (var client = new HttpClient())
+            {
+                var content = new ByteArrayContent(array);
+
+                var result = await client.PutAsync(url, content);
+                return await result.Content.ReadAsStringAsync();
+            }            
+        }
+
+        /// <summary> GET https://cloud-api.yandex.net/v1/disk/resources/upload </summary>
+        public async Task<string> GetUploadModel(string token, string path)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(YandexDiscAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("OAuth", token);
+
+                var result = await client.GetAsync(string.Format("/v1/disk/resources/upload?path={0}", path));
                 return await result.Content.ReadAsStringAsync();
             }
         }

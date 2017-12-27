@@ -123,5 +123,16 @@ namespace FileServiceApi.Controllers
 
             return list;
         }
+
+        /// <summary>
+        /// GET api/googledrive/file/{fileId}/download
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="fileId">file id to download</param>        
+        [HttpGet("file/{fileId}/download")]
+        public string DownloadFile(RequestTokenModel model, string fileId)
+        {
+            return _service.GetLinkToDownloadFile(model.Token, fileId).Result;            
+        }
     }
 }

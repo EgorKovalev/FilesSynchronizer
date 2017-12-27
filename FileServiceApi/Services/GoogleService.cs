@@ -113,9 +113,10 @@ namespace FileServiceApi.Services
             }
         }
 
-        public Task<string> GetLinkToDownloadFile(string token, string path)
+        /// <summary> GET https://drive.google.com/uc?export=download&id=fileId </summary>
+        public async Task<string> GetLinkToDownloadFile(string token, string fileId)
         {
-            throw new NotImplementedException();
+            return GoogleDriveAppClient.DownloadUrl + "/uc?export=download&id=" + fileId;            
         }
 
         public Task<string> UploadFile(string token, string url, string fileContent)
@@ -131,6 +132,7 @@ namespace FileServiceApi.Services
             public static string GrandType { get; } = "authorization_code";
             public static string Scope { get; } = @"https://www.googleapis.com/auth/drive";
             public static string BaseUrl { get; } = @"https://www.googleapis.com";
+            public static string DownloadUrl { get; } = @"https://drive.google.com/";
         }
     }
 }

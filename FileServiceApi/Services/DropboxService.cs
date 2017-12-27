@@ -136,7 +136,7 @@ namespace FileServiceApi.Services
         }
 
         /// <summary> POST https://content.dropboxapi.com/2/files/upload </summary>
-        public string UploadFile(string token, string path, string fileContent)
+        public async Task<string> UploadFile(string token, string path, string fileContent)
         {
             byte[] array = File.ReadAllBytes(fileContent);
 

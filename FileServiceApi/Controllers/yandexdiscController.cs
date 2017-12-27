@@ -118,7 +118,7 @@ namespace FileServiceApi.Controllers
         {
             var newPath = path.Replace(">", "/"); //Temporary solution. Only for swagger bug
 
-            var json = _service.DownloadFile(model.Token, newPath).Result;
+            var json = _service.GetLinkToDownloadFile(model.Token, newPath).Result;
             return JsonConvert.DeserializeObject<LinkToDownloadModel>(json).href;
         }
 

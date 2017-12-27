@@ -78,7 +78,7 @@ namespace FileServiceApi.Services
         }
 
         /// <summary> GET https://cloud-api.yandex.net/v1/disk/resources/download </summary>
-        public async Task<string> DownloadFile(string token, string path)
+        public async Task<string> GetLinkToDownloadFile(string token, string path)
         {
             using (var client = new HttpClient())
             {

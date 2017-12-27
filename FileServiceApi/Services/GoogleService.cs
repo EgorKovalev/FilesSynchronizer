@@ -113,6 +113,16 @@ namespace FileServiceApi.Services
             }
         }
 
+        public Task<string> GetLinkToDownloadFile(string token, string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> UploadFile(string token, string url, string fileContent)
+        {
+            throw new NotImplementedException();
+        }
+
         internal abstract class GoogleDriveAppClient
         {
             public static string RedirectUrl { get; } = @"http://localhost:46278/swagger";

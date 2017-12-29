@@ -134,5 +134,32 @@ namespace FileServiceApi.Controllers
         {
             return _service.GetLinkToDownloadFile(model.Token, fileId).Result;            
         }
+
+        /// <summary>
+        /// PUT api/googledrive/file/{path}/upload
+        /// </summary>
+        /// <param name="model">contains authorization token</param>
+        /// <param name="path">file path to upload</param>        
+        [HttpPut("file/{path}/upload")]
+        public void UploadFile(RequestTokenModel model, string path)
+        {
+            var fileContent = @"C:\Test\testDoc.txt";
+
+            var id = GetUploadLink(model, path);
+            var res = _service.UploadFile(model.Token, id, fileContent);
+        }
+
+        private string GetUploadLink(RequestTokenModel model, string path)
+        {
+            var uploadModel = new UploadInfoRequestModel()
+            {
+                description = "file description",
+                mimeType = "text/plain",
+                title = "test file"
+            };
+
+            var json = _service.GetUploadModel(model.Token, uploadModel).Result;
+            return JsonConvert.DeserializeObject<UploadInfoResponseModel>(json).id;
+        }
     }
 }

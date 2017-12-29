@@ -3,6 +3,7 @@ using Models.GoogleModels;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -119,9 +120,36 @@ namespace FileServiceApi.Services
             return GoogleDriveAppClient.DownloadUrl + "/uc?export=download&id=" + fileId;            
         }
 
-        public Task<string> UploadFile(string token, string url, string fileContent)
+        /// <summary> PUT https://www.googleapis.com/upload/drive/v2/files/{id}?uploadType=media </summary>
+        public async Task<string> UploadFile(string token, string id, string fileContent)
         {
-            throw new NotImplementedException();
+            byte[] array = File.ReadAllBytes(fileContent);
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var content = new ByteArrayContent(array);
+
+                var result = await client.PutAsync(string.Format("/upload/drive/v2/files/{0}?uploadType=media", id), content);
+                return await result.Content.ReadAsStringAsync();
+            }
+        }
+
+        /// <summary> POST https://www.googleapis.com/drive/v2/files </summary>
+        public async Task<string> GetUploadModel(string token, UploadInfoRequestModel model)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(GoogleDriveAppClient.BaseUrl);
+                client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var content = new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json");
+
+                var result = await client.PostAsync("/drive/v2/files", content);
+                return await result.Content.ReadAsStringAsync();
+            }
         }
 
         internal abstract class GoogleDriveAppClient
